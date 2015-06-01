@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <title>Example Scope Server</title>
+  <style type="text/css">
+    body {
+      background-color: white;
+      margin-left: 20%;
+    }
+    h1 {
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+    }
+    form {
+      margin-left: 3em;
+    }
+    input[type="submit"] {
+      margin-top: 1.5em;
+    }
+    div.error {
+      margin: 0.8em 0;
+      color: red;
+    }
+  </style>
+
+  <h1>Select Search Scope</h1>
+  <form method="POST">
+    {% if error %}
+      <div class="error">
+        {{ error }}
+      </div>
+    {% endif %}
+    {% for name in scopes %}
+      <div>
+        <label>
+          <input type="checkbox" name="scope_{{ loop.index0 }}">
+          {{ name }}
+        </label>
+      </div>
+    {% endfor %}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="submit" value="Define Scope">
+  </form>
+</html>

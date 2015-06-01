@@ -1,0 +1,30 @@
+#!/usr/bin/python
+#
+# DermShare -- filter to decode RGB images
+#
+# Copyright (c) 2015 Carnegie Mellon University
+# All rights reserved.
+#
+# This software is distributed under the terms of the Eclipse Public
+# License, Version 1.0 which can be found in the file named LICENSE.
+# ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+# RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+#
+
+from cStringIO import StringIO
+from opendiamond.filter import Filter
+import PIL.Image
+
+class RGBImageFilter(Filter):
+    ATTR = '_rgb_image.rgbimage'
+
+    def __call__(self, obj):
+        image = PIL.Image.open(StringIO(obj.data))
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        obj.set_rgbimage(self.ATTR, image)
+        obj.omit(self.ATTR)
+
+
+if __name__ == '__main__':
+    RGBImageFilter.run()

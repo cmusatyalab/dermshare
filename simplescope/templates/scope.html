@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <title>Setting scope...</title>
+  <style type="text/css">
+    body {
+      background-color: white;
+    }
+    .spinner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url('{{ url_for("static", filename="spinner.gif") }}');
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+  </style>
+
+  <div class="spinner"></div>
+
+  <div id="scope-info" style="display: none;">
+    {{ scope_info }}
+  </div>
+
+  <script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"></script>
+  <script type="text/javascript">
+    function add_field(form, name, value) {
+      $('<input type="hidden">').prop('name', name).
+          prop('value', value).appendTo(form);
+    }
+
+    $(function() {
+      var scope_text = $('#scope-info').text();
+      var scope = JSON.parse(scope_text);
+      if (window.parent !== window) {
+        // in an iframe; return scope cookie to parent
+        window.parent.postMessage(scope_text, '*');
+      } else {
+        // not in an iframe; launch application
+        var form = $('<form method="POST">').
+            prop('action', '{{ application }}');
+        add_field(form, 'cookie', scope.cookie);
+        add_field(form, 'description', scope.description);
+        form.submit();
+      }
+    });
+  </script>
+</html>

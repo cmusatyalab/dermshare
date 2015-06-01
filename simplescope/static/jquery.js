@@ -1,0 +1,1 @@
+../../app/static/3rdparty/jquery.js

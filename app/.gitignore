@@ -1,0 +1,4 @@
+env
+gunicorn.pid
+static/.webassets-cache
+static/gen

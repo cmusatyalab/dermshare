@@ -1,0 +1,37 @@
+#!/usr/bin/python
+#
+# DermShare -- filter that returns a fixed-width thumbnail
+#
+# Copyright (c) 2012 Carnegie Mellon University
+# All rights reserved.
+#
+# This software is distributed under the terms of the Eclipse Public
+# License, Version 1.0 which can be found in the file named LICENSE.
+# ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
+# RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
+#
+
+from cStringIO import StringIO
+from opendiamond.filter import Filter
+from opendiamond.filter.parameters import StringParameter, NumberParameter
+import PIL.Image
+
+class FixedWidthThumbFilter(Filter):
+    params = (
+        StringParameter('attribute'),
+        NumberParameter('width'),
+    )
+
+    def __init__(self, *xargs, **kwargs):
+        Filter.__init__(self, *xargs, **kwargs)
+        self._size = (int(self.width), 999999)
+
+    def __call__(self, obj):
+        buf = StringIO()
+        obj.image.thumbnail(self._size, PIL.Image.ANTIALIAS)
+        obj.image.save(buf, 'JPEG', quality=75)
+        obj.set_binary(self.attribute, buf.getvalue())
+
+
+if __name__ == '__main__':
+    FixedWidthThumbFilter.run()

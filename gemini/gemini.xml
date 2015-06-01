@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<predicate xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1" displayName="Gemini">
+  <options>
+    <optionGroup displayName="Filter">
+      <numberOption displayName="Euclidean Distance" name="filter_distance" min="0" max="1" step="0.01"/>
+    </optionGroup>
+    <optionGroup displayName="Segmentation">
+      <booleanOption displayName="Red channel" name="red_channel" default="true"/>
+      <booleanOption displayName="Green channel" name="green_channel" default="false"/>
+      <booleanOption displayName="Blue channel" name="blue_channel" default="false"/>
+      <booleanOption displayName="Alpha channel" name="alpha_channel" default="false"/>
+    </optionGroup>
+    <optionGroup displayName="Example">
+      <numberOption displayName="Border Scores Average" name="border_scores_average" min="0" max="1" step="0.01"/>
+      <!-- initiallyEnabled="true" disabledValue="NaN" -->
+      <numberOption displayName="Border Scores Stddev" name="border_scores_stddev" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color Asymmetry Major EMD" name="color_asymmetry_major_emd" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color Asymmetry Minor EMD" name="color_asymmetry_minor_emd" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color Histogram black" name="color_histogram_black" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color Histogram blue gray" name="color_histogram_blue_gray" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color Histogram dark brown" name="color_histogram_dark_brown" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color Histogram light brown tan" name="color_histogram_light_brown_tan" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color Histogram red" name="color_histogram_red" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color Histogram white pink" name="color_histogram_white_pink" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color shape asymmetry mean" name="color_shape_asymmetry_mean" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Color shape asymmetry stddev" name="color_shape_asymmetry_stddev" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Colors Histogram Average" name="colors_histogram_average" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Colors Histogram Nonzero" name="colors_histogram_nonzero" min="0" step="0.01"/>
+      <numberOption displayName="Colors Histogram Variance" name="colors_histogram_variance" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Colors PvsC density baysian L" name="colors_pvsc_density_baysian_l" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Colors PvsC density baysian a" name="colors_pvsc_density_baysian_a" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Colors PvsC density baysian b" name="colors_pvsc_density_baysian_b" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Colors PvsC mean difference L" name="colors_pvsc_mean_difference_l" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Colors PvsC mean difference a" name="colors_pvsc_mean_difference_a" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Colors PvsC mean difference b" name="colors_pvsc_mean_difference_b" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Geometric p25" name="geometric_p25" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Geometric p50" name="geometric_p50" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Geometric p75" name="geometric_p75" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Area" name="lesion_area" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Area Filled" name="lesion_area_filled" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Eccentricity" name="lesion_eccentricity" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion FormFactor" name="lesion_formfactor" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Intensity Max" name="lesion_intensity_max" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Intensity Mean" name="lesion_intensity_mean" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Intensity Min" name="lesion_intensity_min" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Major Axis Length" name="lesion_major_axis_length" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Minor Axis Length" name="lesion_minor_axis_length" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Perimeter" name="lesion_perimeter" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Lesion Solidity" name="lesion_solidity" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 0" name="local_binary_pattern_0" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 1" name="local_binary_pattern_1" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 2" name="local_binary_pattern_2" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 3" name="local_binary_pattern_3" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 4" name="local_binary_pattern_4" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 5" name="local_binary_pattern_5" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 6" name="local_binary_pattern_6" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 7" name="local_binary_pattern_7" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Local Binary Pattern 8" name="local_binary_pattern_8" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Scharr 0" name="scharr_0" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Scharr 1" name="scharr_1" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Scharr 2" name="scharr_2" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Scharr 3" name="scharr_3" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Scharr 4" name="scharr_4" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Scharr 5" name="scharr_5" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Scharr 6" name="scharr_6" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Scharr 7" name="scharr_7" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Shape Asymmetry Major Ratio" name="shape_asymmetry_major_ratio" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Shape Asymmetry Minor Ratio" name="shape_asymmetry_minor_ratio" min="0" max="1" step="0.01"/>
+      <numberOption displayName="Delphi Score" name="delphi_score" min="0" max="1" step="0.01"/>
+    </optionGroup>
+  </options>
+  <filters>
+    <filter code="fil_gemini" label="SegmentationFilter">
+      <minScore value="1"/>
+      <arguments>
+        <argument value="SegmentationFilter"/>
+        <argument option="red_channel"/>
+        <argument option="green_channel"/>
+        <argument option="blue_channel"/>
+        <argument option="alpha_channel"/>
+      </arguments>
+    </filter>
+    <filter code="fil_gemini" label="GeminiFilter">
+      <minScore value="0"/>
+      <maxScore value="1"/>
+      <dependencies>
+        <dependency fixedName="RGB"/>
+        <dependency label="SegmentationFilter"/>
+      </dependencies>
+      <arguments>
+        <argument value="GeminiFilter"/>
+        <argument label="SegmentationFilter"/>
+      </arguments>
+    </filter>
+    <filter code="fil_gemini" label="DistanceFilter">
+      <maxScore option="filter_distance"/>
+      <dependencies>
+        <dependency label="GeminiFilter"/>
+      </dependencies>
+      <arguments>
+        <argument value="DistanceFilter"/>
+        <argument label="GeminiFilter"/>
+        <argument option="border_scores_average"/>
+        <argument option="border_scores_stddev"/>
+        <argument option="color_asymmetry_major_emd"/>
+        <argument option="color_asymmetry_minor_emd"/>
+        <argument option="color_histogram_black"/>
+        <argument option="color_histogram_blue_gray"/>
+        <argument option="color_histogram_dark_brown"/>
+        <argument option="color_histogram_light_brown_tan"/>
+        <argument option="color_histogram_red"/>
+        <argument option="color_histogram_white_pink"/>
+        <argument option="color_shape_asymmetry_mean"/>
+        <argument option="color_shape_asymmetry_stddev"/>
+        <argument option="colors_histogram_average"/>
+        <argument option="colors_histogram_nonzero"/>
+        <argument option="colors_histogram_variance"/>
+        <argument option="colors_pvsc_density_baysian_l"/>
+        <argument option="colors_pvsc_density_baysian_a"/>
+        <argument option="colors_pvsc_density_baysian_b"/>
+        <argument option="colors_pvsc_mean_difference_l"/>
+        <argument option="colors_pvsc_mean_difference_a"/>
+        <argument option="colors_pvsc_mean_difference_b"/>
+        <argument option="geometric_p25"/>
+        <argument option="geometric_p50"/>
+        <argument option="geometric_p75"/>
+        <argument option="lesion_area"/>
+        <argument option="lesion_area_filled"/>
+        <argument option="lesion_eccentricity"/>
+        <argument option="lesion_formfactor"/>
+        <argument option="lesion_intensity_max"/>
+        <argument option="lesion_intensity_mean"/>
+        <argument option="lesion_intensity_min"/>
+        <argument option="lesion_major_axis_length"/>
+        <argument option="lesion_minor_axis_length"/>
+        <argument option="lesion_perimeter"/>
+        <argument option="lesion_solidity"/>
+        <argument option="local_binary_pattern_0"/>
+        <argument option="local_binary_pattern_1"/>
+        <argument option="local_binary_pattern_2"/>
+        <argument option="local_binary_pattern_3"/>
+        <argument option="local_binary_pattern_4"/>
+        <argument option="local_binary_pattern_5"/>
+        <argument option="local_binary_pattern_6"/>
+        <argument option="local_binary_pattern_7"/>
+        <argument option="local_binary_pattern_8"/>
+        <argument option="scharr_0"/>
+        <argument option="scharr_1"/>
+        <argument option="scharr_2"/>
+        <argument option="scharr_3"/>
+        <argument option="scharr_4"/>
+        <argument option="scharr_5"/>
+        <argument option="scharr_6"/>
+        <argument option="scharr_7"/>
+        <argument option="shape_asymmetry_major_ratio"/>
+        <argument option="shape_asymmetry_minor_ratio"/>
+        <argument option="delphi_score"/>
+      </arguments>
+    </filter>
+  </filters>
+</predicate>
