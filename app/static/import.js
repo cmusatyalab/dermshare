@@ -95,9 +95,12 @@ ko.bindingHandlers.exampleDropZone = {
 
 ko.bindingHandlers.openFileWidget = {
   // open dialog for examples
-  init: function(element, valueAccessor) {
+  init: function(element, valueAccessor, allBindings) {
     var form = $('<form class="hide">').insertAfter(element);
     var input = $('<input type="file" accept="image/*">').appendTo(form);
+    if (allBindings.get('openFileCapture')) {
+      input.attr('capture', true);
+    }
     input.on('change', function(ev) {
       valueAccessor()(this.files[0]);
       form[0].reset();

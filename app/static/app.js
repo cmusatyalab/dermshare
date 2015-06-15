@@ -146,6 +146,7 @@ function App(options) {
     self.arguments[p.name] = p.argument;
   });
 
+  var barcodeData = ko.observable();
   var exampleData = ko.observable();
   var exampleFile;
 
@@ -209,6 +210,21 @@ function App(options) {
     autoSegmRunning: ko.observable(false),
     autoSegm: ko.observable(null),
 
+    barcode: ko.computed({
+      read: barcodeData,
+      write: function(file) {
+        if (!file) {
+          barcodeData(null);
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function() {
+          barcodeData(reader.result);
+        };
+        reader.readAsDataURL(file);
+      },
+    }, this),
+
     error: ko.observable(null),
 
     createSearch: function() {
@@ -254,6 +270,8 @@ function App(options) {
       self.error(null);
     },
   });
+
+  this.sock = new ClientSocket(options.ws_url, this.barcode, this.example);
 
   this.haveSegmentation = ko.computed(function() {
     return (this.example() && !this.autoSegmRunning() &&

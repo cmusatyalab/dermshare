@@ -30,10 +30,11 @@ import tempfile
 import threading
 import time
 import urllib
-from urlparse import urljoin, urlsplit
+from urlparse import urljoin, urlsplit, urlunsplit
 import uuid
 from werkzeug.exceptions import BadRequest as _BadRequest
 
+WEBSOCKET_BASEURL = None  # default: root of application + /ws
 SCOPESERVER = 'https://scopeserver.diamond.example.org/'
 AUTOSEGMENT_COOKIE = '/etc/dermshare/autosegment-cookie'
 DUMP_SEARCH_DATA = True
@@ -53,6 +54,15 @@ app_css = Bundle(
 assets.register('app_css', Bundle(
     app_css,
     filters='cssmin', output='gen/app.css'
+))
+remote_css = Bundle(
+    '3rdparty/bootstrap/css/bootstrap.css',
+    '3rdparty/fontawesome/css/font-awesome.css',
+    filters='cssrewrite'
+)
+assets.register('remote_css', Bundle(
+    remote_css,
+    filters='cssmin', output='gen/remote.css'
 ))
 
 app_js_part1 = Bundle(
@@ -78,6 +88,7 @@ app_js_part2 = Bundle(
     'segment.js',
     'import.js',
     'plot.js',
+    'websocket.js',
     'app.js',
     filters='rjsmin',
 )
@@ -86,6 +97,24 @@ assets.register('app_js', Bundle(
     '3rdparty/knockout.min.js',
     app_js_part2,
     output='gen/app.js'
+))
+remote_js_part1 = Bundle(
+    'browser.js',
+    '3rdparty/jquery.js',
+    '3rdparty/bootstrap/js/bootstrap.js',
+    filters='rjsmin'
+)
+remote_js_part2 = Bundle(
+    'import.js',
+    'websocket.js',
+    'remote.js',
+    filters='rjsmin',
+)
+assets.register('remote_js', Bundle(
+    remote_js_part1,
+    '3rdparty/knockout.min.js',
+    remote_js_part2,
+    output='gen/remote.js'
 ))
 
 
@@ -198,6 +227,18 @@ def _csrf_protect(f):
     return wrapper
 
 
+def _get_ws_url(endpoint):
+    # urljoin doesn't work for ws/wss URLs
+    add_component = lambda a, b: a + ('' if a.endswith('/') else '/') + b
+    url = app.config['WEBSOCKET_BASEURL']
+    if not url:
+        parts = urlsplit(request.url_root)
+        url = urlunsplit(('wss' if parts.scheme == 'https' else 'ws',
+                parts.netloc, parts.path, '', ''))
+        url = add_component(url, 'ws')
+    return add_component(url, endpoint)
+
+
 @app.route('/', methods=('GET', 'POST'))
 def index():
     # No CSRF protection on POST, since we expect cross-site cookie
@@ -208,6 +249,7 @@ def index():
         app_date=app.date,
         csrf_token=request.csrf_token,
         scopeserver=app.config['SCOPESERVER'],
+        ws_url=_get_ws_url('client'),
         cookie=request.form.get('cookie'),
         description=request.form.get('description'),
     )
@@ -216,6 +258,14 @@ def index():
 @app.route('/unsupported')
 def unsupported():
     return render_template('unsupported.html')
+
+
+@app.route('/remote/<token>')
+def remote(token):
+    return render_template('remote.html',
+        ws_url=_get_ws_url('mobile'),
+        token=token,
+    )
 
 
 def _blaster_url(cookie):
@@ -591,6 +641,9 @@ if __name__ == '__main__':
                 help='port to listen on [5000]')
     parser.add_option('-s', '--scopeserver', metavar='URL', dest='SCOPESERVER',
                 help='embedding URL for scope server')
+    parser.add_option('-w', '--websocket', metavar='BASE-URL',
+                dest='WEBSOCKET_BASEURL',
+                help='base URL for websocket server')
 
     parser.add_option('--debug-assets', dest='_debug_assets', action='store_true',
                 help='debug asset bundling')

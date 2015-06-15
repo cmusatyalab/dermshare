@@ -123,6 +123,18 @@
       height: 100%;
       max-height: none;
     }
+    #remote-info {
+      margin-top: 3em;
+    }
+    #remote-info-content {
+      text-align: center;
+    }
+    #remote-info .kick {
+      margin-left: 0.5em;
+    }
+    #remote-info .verifier {
+      font-weight: bold;
+    }
     .spinner {
       background-image: url('{{ url_for("static", filename="spinner.gif") }}');
       background-repeat: no-repeat;
@@ -413,8 +425,9 @@
               </button>
               <!-- ko ifnot: example() -->
                 <div class="example-text text-info">
-                  Drag and drop an image file here, or click the folder
-                  icon to browse.
+                  Drag and drop an image file here, click the folder
+                  icon to browse, or take a photo with a connected mobile
+                  device.
                 </div>
               <!-- /ko -->
               <div id="example-image"
@@ -508,6 +521,31 @@
                 </tbody>
               </table>
             </form>
+
+            <div id="remote-info"
+                data-bind="visible: sock.connected() && !sock.closed()">
+              <legend>Mobile device</legend>
+              <div id="remote-info-content">
+                <div data-bind="if: barcode() && !sock.verifier()">
+                  <p>Scan to connect:</p>
+                  <img data-bind="attr: {src: barcode}">
+                </div>
+                <div data-bind="if: sock.verifier">
+                  <p>
+                    Connected.
+                    <a class="kick"
+                        data-bind="click: sock.kick">
+                      <i class="fa fa-sign-out"></i>
+                    </a>
+                  </p>
+                  <p>
+                    <i class="fa fa-key"></i>
+                    <span class="verifier"
+                        data-bind="text: sock.verifier"></span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -676,6 +714,7 @@
         csrf_token: '{{ csrf_token }}',
         search_url: '{{ url_for("search") }}',
         segment_url: '{{ url_for("segment") }}',
+        ws_url: '{{ ws_url }}',
       });
       ko.applyBindings(app, $('html')[0]);
       // now show the page to avoid flicker

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" class="hide" data-fallback-url="{{ url_for('unsupported') }}">
+  <meta name="viewport" content="width=device-width, user-scalable=0">
+  <title>DermShare Remote</title>
+  {% assets "remote_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+  <style type="text/css">
+    .top {
+      text-align: center;
+      font-size: 150%;
+    }
+    .verifier {
+      font-weight: bold;
+    }
+    .buttons {
+      margin-top: 0.5em;
+    }
+    .buttons .btn {
+      width: 100%;
+      margin-top: 1em;
+    }
+    .spinner {
+      background-image: url('{{ url_for("static", filename="spinner.gif") }}');
+      background-repeat: no-repeat;
+      background-position: center center;
+      min-height: 60px;
+      min-width: 60px;
+      margin-top: 0.3em;
+    }
+  </style>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12 top">
+        <h3>DermShare Remote</h3>
+
+        <div class="status">
+          <span data-bind="if: !sock.verifier() && !sock.closed()">
+            Connecting...
+          </span>
+
+          <span data-bind="if: !sock.connected() && sock.closed()">
+            Connection failed.
+          </span>
+
+          <span data-bind="if: sock.verifier() && !sock.closed()">
+            <i class="fa fa-key"></i>
+            <span class="verifier"
+                data-bind="text: sock.verifier"></span>
+          </span>
+
+          <span data-bind="if: sock.connected() && sock.closed()">
+            Session finished.
+          </span>
+        </div>
+
+        <div class="buttons"
+            data-bind="if: sock.verifier() && !sock.closed()">
+          <button class="btn btn-large btn-primary"
+              data-bind="openFileWidget: image,
+                         openFileCapture: true">
+            <i class="fa fa-camera"></i>
+            Take photo
+          </button>
+        </div>
+
+        <div class="spinner"
+            data-bind="visible: sock.pending() && !sock.closed()"></div>
+      </div>
+    </div>
+  </div>
+
+  {% assets "remote_js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+  <script type="text/javascript">
+    $(function() {
+      var app = new RemoteApp('{{ ws_url }}', '{{ token }}');
+      ko.applyBindings(app, $('html')[0]);
+      // now show the page to avoid flicker
+      $('html').removeClass('hide');
+    });
+  </script>
+</html>
