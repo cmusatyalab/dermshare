@@ -177,6 +177,12 @@ class ImageMobileConnection(_ImageRelayConnection):
             raise ValueError('Invalid state')
 
 
+resources = Resource(OrderedDict((
+    ('/ws/client', ImageClientConnection),
+    ('/ws/mobile', ImageMobileConnection),
+)))
+
+
 def _main():
     parser = ArgumentParser(description='DermShare Remote websocket server.',
             fromfile_prefix_chars='@',
@@ -198,11 +204,7 @@ def _main():
     ImageClientConnection.BASE_URL = (args.mobile_url or
             urljoin(args.origin[0], '/remote/'))
 
-    resources = OrderedDict()
-    resources['/ws/client'] = ImageClientConnection
-    resources['/ws/mobile'] = ImageMobileConnection
-    WebSocketServer((args.listen, args.port),
-            Resource(resources)).serve_forever()
+    WebSocketServer((args.listen, args.port), resources).serve_forever()
 
 
 if __name__ == '__main__':
