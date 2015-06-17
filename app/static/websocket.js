@@ -36,6 +36,14 @@ function _ImageSocket(url) {
       self.closed(ev.reason || 'Connection closed');
     },
   });
+
+  var ping_timer = setInterval(function() {
+    if (self.closed()) {
+      clearInterval(ping_timer);
+    } else if (self.connected()) {
+      self.send_msg('ping');
+    }
+  }, 30000);
 }
 
 
@@ -75,6 +83,8 @@ function ClientSocket(url, barcode, image) {
           break;
         case 'image':
           expect = EXPECT_IMAGE;
+          break;
+        case 'pong':
           break;
         default:
           self.sock.close(1002, 'Received unexpected message');
@@ -141,6 +151,8 @@ function MobileSocket(url, auth_token) {
         if (self.pending()) {
           self.pending(self.pending() - 1);
         }
+        break;
+      case 'pong':
         break;
       default:
         self.sock.close(1002, 'Received unexpected message');

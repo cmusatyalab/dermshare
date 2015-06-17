@@ -143,6 +143,8 @@ class ImageClientConnection(_ImageRelayConnection):
         elif msg['type'] == 'kick':
             if self.peer:
                 self.peer.close(1000, 'Connection terminated by client')
+        elif msg['type'] == 'ping':
+            self.send_msg('pong')
         else:
             raise ValueError('Invalid message')
 
@@ -177,6 +179,8 @@ class ImageMobileConnection(_ImageRelayConnection):
             msg = json.loads(msg)
             if msg['type'] == 'image':
                 self.state = self.STATE_SENDING_IMAGE
+            elif msg['type'] == 'ping':
+                self.send_msg('pong')
             else:
                 raise ValueError('Invalid message')
         elif self.state == self.STATE_SENDING_IMAGE:
