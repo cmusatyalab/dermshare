@@ -1,4 +1,4 @@
-# gunicorn config file
+# gunicorn config file for dermshare.py
 
 bind = '0.0.0.0:8024'
 workers = 8

@@ -1,4 +1,5 @@
-env
-gunicorn.pid
+/env
+/gunicorn.pid
+/gunicorn-ws.pid
 static/.webassets-cache
 static/gen
