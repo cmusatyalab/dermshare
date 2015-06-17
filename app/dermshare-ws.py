@@ -11,7 +11,6 @@
 # RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 #
 
-from argparse import ArgumentParser
 import base64
 from cStringIO import StringIO
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
@@ -19,13 +18,26 @@ import json
 import os
 import qrcode
 import random
+import sys
 from urlparse import urljoin
+import yaml
 
 try:
     from collections import OrderedDict
 except ImportError:
     # Python 2.6
     from ordereddict import OrderedDict
+
+config = {
+    # Address to listen on (ignored under gunicorn)
+    'listen': '127.0.0.1',
+    # URL of mobile site (defaulted if not specified)
+    'mobile_url': None,
+    # Permitted HTTP origins
+    'origins': [],
+    # Port to listen on (ignored under gunicorn)
+    'port': 5003,
+}
 
 class _WSError(Exception):
     def __init__(self, code, msg):
@@ -34,14 +46,12 @@ class _WSError(Exception):
 
 
 class _ImageRelayConnection(WebSocketApplication):
-    ORIGINS = []
-
     def __init__(self, *args, **kwargs):
         WebSocketApplication.__init__(self, *args, **kwargs)
         self.peer = None
 
     def on_open(self):
-        if self.ws.origin not in self.ORIGINS:
+        if self.ws.origin not in config['origins']:
             print 'Origin prohibited: {0}'.format(self.ws.origin)
             self.close(1008, 'Origin prohibited')
             return
@@ -89,11 +99,12 @@ class _ImageRelayConnection(WebSocketApplication):
 
 
 class ImageClientConnection(_ImageRelayConnection):
-    BASE_URL = None
     _connections = {}  # token -> ImageClientConnection
 
     def __init__(self, *args, **kwargs):
         _ImageRelayConnection.__init__(self, *args, **kwargs)
+        self.base_url = (config['mobile_url'] or
+                urljoin(config['origins'][0], '/remote/'))
         self.token = base64.urlsafe_b64encode(os.urandom(24))
         self.verifier = None
 
@@ -116,7 +127,7 @@ class ImageClientConnection(_ImageRelayConnection):
         self.send_msg('unpeer')
 
     def _on_open(self):
-        url = urljoin(self.BASE_URL, self.token)
+        url = urljoin(self.base_url, self.token)
         barcode = qrcode.make(url, box_size=4, border=0,
                 error_correction=qrcode.constants.ERROR_CORRECT_L)
         buf = StringIO()
@@ -177,35 +188,25 @@ class ImageMobileConnection(_ImageRelayConnection):
             raise ValueError('Invalid state')
 
 
+def _load_settings(path):
+    if path:
+        with open(path) as fh:
+            config.update(yaml.safe_load(fh))
+
+
+_load_settings(os.environ.get('DERMSHARE_WS_SETTINGS'))
+
+
 resources = Resource(OrderedDict((
     ('/ws/client', ImageClientConnection),
     ('/ws/mobile', ImageMobileConnection),
 )))
 
 
-def _main():
-    parser = ArgumentParser(description='DermShare Remote websocket server.',
-            fromfile_prefix_chars='@',
-            epilog='Pass @<filename> to load command-line arguments from a file.')
-    parser.convert_arg_line_to_args = lambda s: s.split()
-    parser.add_argument('-l', '--listen', metavar='ADDRESS',
-            default='127.0.0.1',
-            help='address to listen on [127.0.0.1]')
-    parser.add_argument('-o', '--origin', metavar='ORIGIN', action='append',
-            required=True,
-            help='permit specified HTTP origin (may be repeated)')
-    parser.add_argument('-p', '--port', metavar='PORT',
-            type=int, default=5003,
-            help='port to listen on [5003]')
-    parser.add_argument('-u', '--mobile-url', metavar='URL',
-            help='URL of mobile site [auto]')
-    args = parser.parse_args()
-    _ImageRelayConnection.ORIGINS.extend(args.origin)
-    ImageClientConnection.BASE_URL = (args.mobile_url or
-            urljoin(args.origin[0], '/remote/'))
-
-    WebSocketServer((args.listen, args.port), resources).serve_forever()
-
-
 if __name__ == '__main__':
-    _main()
+    try:
+        _load_settings(sys.argv[1])
+    except IndexError:
+        pass
+    WebSocketServer((config['listen'], config['port']),
+            resources).serve_forever()
