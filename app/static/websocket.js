@@ -14,10 +14,10 @@ function _ImageSocket(url) {
   var self = this;
 
   $.extend(this, {
-    sock: new WebSocket(url),
+    sock: url ? new WebSocket(url) : {},
 
     connected: ko.observable(false),
-    closed: ko.observable(),
+    closed: ko.observable(url ? null : 'WebSockets not configured'),
 
     send_msg: function(type, data) {
       var msg = $.extend({}, data || {}, {

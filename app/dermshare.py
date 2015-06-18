@@ -30,11 +30,11 @@ import tempfile
 import threading
 import time
 import urllib
-from urlparse import urljoin, urlsplit, urlunsplit
+from urlparse import urljoin, urlsplit
 import uuid
 from werkzeug.exceptions import BadRequest as _BadRequest
 
-WEBSOCKET_BASEURL = None  # default: root of application + /ws
+WEBSOCKET_BASEURL = None
 SCOPESERVER = 'https://scopeserver.diamond.example.org/'
 AUTOSEGMENT_COOKIE = '/etc/dermshare/autosegment-cookie'
 DUMP_SEARCH_DATA = True
@@ -228,15 +228,11 @@ def _csrf_protect(f):
 
 
 def _get_ws_url(endpoint):
-    # urljoin doesn't work for ws/wss URLs
-    add_component = lambda a, b: a + ('' if a.endswith('/') else '/') + b
     url = app.config['WEBSOCKET_BASEURL']
     if not url:
-        parts = urlsplit(request.url_root)
-        url = urlunsplit(('wss' if parts.scheme == 'https' else 'ws',
-                parts.netloc, parts.path, '', ''))
-        url = add_component(url, 'ws')
-    return add_component(url, endpoint)
+        return None
+    # urljoin doesn't work for ws/wss URLs
+    return url + ('' if url.endswith('/') else '/') + endpoint
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -249,7 +245,7 @@ def index():
         app_date=app.date,
         csrf_token=request.csrf_token,
         scopeserver=app.config['SCOPESERVER'],
-        ws_url=_get_ws_url('client'),
+        ws_url=_get_ws_url('client') or '',
         cookie=request.form.get('cookie'),
         description=request.form.get('description'),
     )
@@ -263,7 +259,7 @@ def unsupported():
 @app.route('/remote/<token>')
 def remote(token):
     return render_template('remote.html',
-        ws_url=_get_ws_url('mobile'),
+        ws_url=_get_ws_url('mobile') or '',
         token=token,
     )
 
