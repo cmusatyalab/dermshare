@@ -1171,6 +1171,89 @@ CIPPImage<Ipp8u> CIPPImage<Ipp8u>::filterMedian(IppiMaskSize mask) const
 
 
 /**
+ *
+ * The function ippiResize is declared in the ippi.h file. This function resizes the source
+ * image ROI by xFactor in the x direction and yFactor in the y direction. The image size
+ * can be either reduced or increased in each direction, depending on the values of
+ * xFactor, yFactor. The result is resampled using the interpolation method specified by
+ * the interpolation parameter, and written to the destination image ROI.
+ *
+ * @param xFactor
+ * @param yFactor
+ * @param interpolation The type of interpolation to perform for image resampling.
+ *		  IPPI_INTER_NN nearest neighbor interpolation
+ *	      IPPI_INTER_LINEAR linear interpolation
+ *        IPPI_INTER_CUBIC cubic interpolation
+ *        IPPI_INTER_SUPER supersampling interpolation
+ *
+ **/
+template<>
+CIPPImage<Ipp8u> CIPPImage<Ipp8u>::resize(double xFactor, double yFactor, int interpolation) const
+{
+	IppiSize sizeResult;
+	IppiRect srcROI;
+	IppiRect destROI;
+	IppStatus status;
+	Ipp8u *buf;
+	int bufsize;
+
+	srcROI.x = 0;
+	srcROI.y = 0;
+	srcROI.width = _size.width;
+	srcROI.height = _size.height;
+
+	sizeResult.width = (int)(_size.width * xFactor);
+	sizeResult.height = (int)(_size.height * yFactor);
+
+	destROI.x = 0;
+	destROI.y = 0;
+	destROI.width = sizeResult.width;
+	destROI.height = sizeResult.height;
+
+	CIPPImage<Ipp8u> result(sizeResult, _nChannels, 0);
+
+	status = ippiResizeGetBufSize(srcROI, destROI, _nChannels, interpolation,
+	        &bufsize);
+	if (status)
+		goto out;
+
+	buf = ippsMalloc_8u(bufsize);
+
+	switch(_nChannels)
+	{
+		// if only one channel
+	case 1:
+		status = ippiResizeSqrPixel_8u_C1R(_imageData, _size,
+		        _size.width, srcROI, result._imageData,
+		        destROI.width, destROI, xFactor, yFactor, 0, 0,
+		        interpolation, buf);
+		break;
+	case 3:
+		status = ippiResizeSqrPixel_8u_C3R(_imageData, _size,
+		        _size.width*3, srcROI, result._imageData,
+		        destROI.width*3, destROI, xFactor, yFactor, 0, 0,
+		        interpolation, buf);
+		break;
+	case 4:
+		status = ippiResizeSqrPixel_8u_AC4R(_imageData, _size,
+		        _size.width*4, srcROI, result._imageData,
+		        destROI.width*4, destROI, xFactor, yFactor, 0, 0,
+		        interpolation, buf);
+		break;
+	default:
+		cout << "\nError -- [CIPPImage::resize] _nChannels can only be 1, 3, or 4";
+	}
+
+	ippsFree(buf);
+
+out:
+	if (status)
+		displayStatus(status);
+	return result;
+}
+
+
+/**
  * bool rotateImage(const Ipp8u * pSrc, IppiSize sizeSrc, Ipp8u * &pDst, IppiSize * pSizeDst, int nChannels, double angle, double * pXShift, double * pYShift)\
  * following matlab's style
  *

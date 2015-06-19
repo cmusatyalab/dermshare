@@ -82,13 +82,23 @@ static void dumpImages(ImageMap &images, const char *base_path)
 	g_free(prefix);
 }
 
-static void processOne(ImageMap &images, CDiamondContext &diamond)
+static double processOne(ImageMap &images, CDiamondContext &diamond)
 {
+	double xscale, yscale, factor;
+
 	alarm(TIMEOUT);
 	srand(0);
+
+	xscale = 640. / images[""].width();
+	yscale = 640. / images[""].height();
+	factor = xscale < yscale ? xscale : yscale;
+	images[""] = images[""].resize(factor, factor);
+
 	removeHair(images, diamond);
 	segment(images, diamond);
 	alarm(0);
+
+	return 1./factor;
 }
 
 struct FilterConfig {
@@ -116,12 +126,13 @@ static double filter_eval(lf_obj_handle_t ohandle, void *filter_data)
 	ImageMap images;
 	const void *data;
 	size_t len;
+	double scale_factor;
 
 	if (lf_ref_attr(ohandle, "_rgb_image.rgbimage", &len, &data)) {
 		return -numeric_limits<double>::infinity();
 	}
 	images[""].load(*(const RGBImage *) data);
-	processOne(images, diamond);
+	scale_factor = processOne(images, diamond);
 
 	// write attributes
 	diamond.save(ohandle);
@@ -129,6 +140,11 @@ static double filter_eval(lf_obj_handle_t ohandle, void *filter_data)
 	// set heat map
 	vector<uchar> buf;
 	images["segmFilled"].save(".png", buf);
+
+        images["segmFilled"]
+		.resize(scale_factor, scale_factor)
+		.save(".png", buf);
+
 	lf_write_attr(ohandle, config->heatmap_attr, buf.size(), &buf[0]);
 
 	return 1;
