@@ -27,7 +27,9 @@
 2. Use [make-filter.py](gemini/make-filter.py) to build the Gemini filter.
 3. Create and populate virtualenv.  Use `--system-site-packages`, since
    OpenDiamond can't be installed with pip.
-4. Configure and run.
+4. Configure and run.  `dermshare.py` is always needed, but `dermshare-ws.py`
+   is only necessary if the mobile device link is enabled with
+   `WEBSOCKET_BASEURL`.
 
 ## Diamond servers
 
