@@ -1,6 +1,5 @@
 # Capture of example images
 
-- Support provisioning of example images from handheld dermatoscope
 - Allow other web apps to provision an example when launching DermShare
 - Allow saving externally-provisioned examples to user's desktop
 - We cannot reliably extract features when the detected lesion touches
@@ -14,9 +13,7 @@
 
 - Detect and ignore pixels outside image area on affected slides
 - Replace Intel IPP with an open-source library
-- Scale-invariant hair removal
 - Detect ruler markings and inpaint
-- Produce segmentation closer to a human's (e.g. smooth edges)
 - Don't assume that the lesion is at the center of the image
 - Examine alternative algorithms (e.g. GrowCut)
 
