@@ -10,14 +10,14 @@
  * RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
  */
 
-function _ImageSocket(url) {
+function _ImageSocket(args) {
   var self = this;
 
   $.extend(this, {
-    sock: url ? new WebSocket(url) : {},
+    sock: args.url ? new WebSocket(args.url) : {},
 
     connected: ko.observable(false),
-    closed: ko.observable(url ? null : 'WebSockets not configured'),
+    closed: ko.observable(args.url ? null : 'WebSockets not configured'),
 
     send_msg: function(type, data) {
       var msg = $.extend({}, data || {}, {
@@ -30,10 +30,20 @@ function _ImageSocket(url) {
   $.extend(self.sock, {
     onopen: function(ev) {
       self.connected(true);
+      if (args.open) {
+        args.open(ev);
+      }
+    },
+
+    onmessage: function(ev) {
+      args.message(ev);
     },
 
     onclose: function(ev) {
       self.closed(ev.reason || 'Connection closed');
+      if (args.close) {
+        args.close(ev);
+      }
     },
   });
 
@@ -59,18 +69,10 @@ function ClientSocket(url, barcode, image) {
   var self = this;
   var expect = EXPECT_BARCODE;
 
-  _ImageSocket.apply(this, [url]);
+  _ImageSocket.apply(this, [{
+    url: url,
 
-  $.extend(this, {
-    verifier: ko.observable(),
-
-    kick: function() {
-      self.send_msg('kick');
-    },
-  });
-
-  $.extend(self.sock, {
-    onmessage: function(ev) {
+    message: function(ev) {
       switch (expect) {
       case EXPECT_MSG:
         var msg = JSON.parse(ev.data);
@@ -108,6 +110,14 @@ function ClientSocket(url, barcode, image) {
         break;
       }
     },
+  }]);
+
+  $.extend(this, {
+    verifier: ko.observable(),
+
+    kick: function() {
+      self.send_msg('kick');
+    },
   });
 }
 
@@ -119,29 +129,16 @@ function MobileSocket(url, auth_token) {
 
   var self = this;
 
-  _ImageSocket.apply(this, [url]);
+  _ImageSocket.apply(this, [{
+    url: url,
 
-  $.extend(this, {
-    verifier: ko.observable(),
-    pending: ko.observable(0),
-
-    send_image: function(blob) {
-      self.pending(self.pending() + 1);
-      self.send_msg('image');
-      self.sock.send(blob);
-    },
-  });
-
-  var super_onopen = self.sock.onopen;
-  $.extend(self.sock, {
-    onopen: function() {
-      super_onopen();
+    open: function() {
       self.send_msg('auth', {
         token: auth_token,
       });
     },
 
-    onmessage: function(ev) {
+    message: function(ev) {
       var msg = JSON.parse(ev.data);
       switch (msg.type) {
       case 'hello':
@@ -158,6 +155,17 @@ function MobileSocket(url, auth_token) {
         self.sock.close(1002, 'Received unexpected message');
         break;
       }
+    },
+  }]);
+
+  $.extend(this, {
+    verifier: ko.observable(),
+    pending: ko.observable(0),
+
+    send_image: function(blob) {
+      self.pending(self.pending() + 1);
+      self.send_msg('image');
+      self.sock.send(blob);
     },
   });
 }
