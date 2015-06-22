@@ -14,10 +14,8 @@ function _ImageSocket(args) {
   var self = this;
 
   $.extend(this, {
-    sock: args.url ? new WebSocket(args.url) : {},
-
     connected: ko.observable(false),
-    closed: ko.observable(args.url ? null : 'WebSockets not configured'),
+    closed: ko.observable(null),
 
     send_msg: function(type, data) {
       var msg = $.extend({}, data || {}, {
@@ -27,25 +25,40 @@ function _ImageSocket(args) {
     },
   });
 
-  $.extend(self.sock, {
-    onopen: function(ev) {
-      self.connected(true);
-      if (args.open) {
-        args.open(ev);
-      }
-    },
+  function connect() {
+    if (args.url) {
+      self.sock = new WebSocket(args.url);
+    } else {
+      self.sock = {};
+      self.closed('WebSockets not configured');
+    }
 
-    onmessage: function(ev) {
-      args.message(ev);
-    },
+    $.extend(self.sock, {
+      onopen: function(ev) {
+        self.connected(true);
+        if (args.open) {
+          args.open(ev);
+        }
+      },
 
-    onclose: function(ev) {
-      self.closed(ev.reason || 'Connection closed');
-      if (args.close) {
-        args.close(ev);
-      }
-    },
-  });
+      onmessage: function(ev) {
+        args.message(ev);
+      },
+
+      onclose: function(ev) {
+        if (args.reopen && args.reopen(ev)) {
+          self.connected(false);
+          setTimeout(connect, 1000);
+        } else {
+          self.closed(ev.reason || 'Connection closed');
+          if (args.close) {
+            args.close(ev);
+          }
+        }
+      },
+    });
+  }
+  connect();
 
   var ping_timer = setInterval(function() {
     if (self.closed()) {
@@ -67,7 +80,12 @@ function ClientSocket(url, barcode, image) {
   var EXPECT_IMAGE = 2;
 
   var self = this;
-  var expect = EXPECT_BARCODE;
+  var expect;
+
+  function init_socket() {
+    expect = EXPECT_BARCODE;
+    self.verifier(null);
+  };
 
   _ImageSocket.apply(this, [{
     url: url,
@@ -110,6 +128,11 @@ function ClientSocket(url, barcode, image) {
         break;
       }
     },
+
+    reopen: function() {
+      init_socket();
+      return true;
+    },
   }]);
 
   $.extend(this, {
@@ -119,6 +142,8 @@ function ClientSocket(url, barcode, image) {
       self.send_msg('kick');
     },
   });
+
+  init_socket();
 }
 
 
