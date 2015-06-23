@@ -165,6 +165,10 @@ function App(options) {
           exampleFile = null;
           exampleData(null);
           self.exampleFilename(null);
+          if (self.exampleObjectURL()) {
+            URL.revokeObjectURL(self.exampleObjectURL());
+            self.exampleObjectURL(null);
+          }
           self.autoSegm(null);
           self.autoSegmRunning(false);
           return;
@@ -174,6 +178,10 @@ function App(options) {
         reader.onload = function() {
           exampleFile = file;
           exampleData(reader.result);
+          if (self.exampleObjectURL()) {
+            URL.revokeObjectURL(self.exampleObjectURL());
+          }
+          self.exampleObjectURL(URL.createObjectURL(file));
           self.autoSegm(null);
           self.autoSegmRunning(true);
 
@@ -221,6 +229,7 @@ function App(options) {
       },
     }, this),
     exampleFilename: ko.observable(),
+    exampleObjectURL: ko.observable(),
     autoSegmRunning: ko.observable(false),
     autoSegm: ko.observable(null),
 
