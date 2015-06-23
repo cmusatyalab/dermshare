@@ -85,6 +85,7 @@ function ClientSocket(url, barcode, image, imageSaved) {
 
   function init_socket() {
     expect = EXPECT_BARCODE;
+    barcode(null);
     self.verifier(null);
   };
 
