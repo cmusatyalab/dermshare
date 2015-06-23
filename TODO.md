@@ -1,7 +1,6 @@
 # Capture of example images
 
 - Allow other web apps to provision an example when launching DermShare
-- Allow saving externally-provisioned examples to user's desktop
 - We cannot reliably extract features when the detected lesion touches
   the edge of the imaged area, a clinical system should alert the
   operator early when a lesion if found to touch the edge
