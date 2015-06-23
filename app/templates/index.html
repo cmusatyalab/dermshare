@@ -383,6 +383,15 @@
 
             <div class="segmenter-controls btn-toolbar" role="toolbar">
               <div class="btn-group" role="group">
+                <a class="btn" id="save"
+                    data-bind="css: {disabled: !haveDownloadAttribute || !example()},
+                               attr: {href: example,
+                                      download: exampleFilename,
+                                      title: haveDownloadAttribute ? null : 'Not supported in this browser'}">
+                  <i class="fa fa-floppy-o"></i> Save Image
+                </a>
+              </div>
+              <div class="btn-group" role="group">
                 <button class="btn" id="paint"
                     data-bind="css: {active: !segmenter.erasing(),
                                      disabled: !haveSegmentation()},

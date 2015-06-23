@@ -164,6 +164,7 @@ function App(options) {
         if (!file) {
           exampleFile = null;
           exampleData(null);
+          self.exampleFilename(null);
           self.autoSegm(null);
           self.autoSegmRunning(false);
           return;
@@ -175,6 +176,18 @@ function App(options) {
           exampleData(reader.result);
           self.autoSegm(null);
           self.autoSegmRunning(true);
+
+          switch (file.type) {
+          case 'image/jpeg':
+            self.exampleFilename('example.jpg');
+            break;
+          case 'image/png':
+            self.exampleFilename('example.png');
+            break;
+          default:
+            self.exampleFilename('example');
+            break;
+          }
 
           var form = new FormData();
           form.append('csrf_token', options.csrf_token);
@@ -207,6 +220,7 @@ function App(options) {
         reader.readAsDataURL(file);
       },
     }, this),
+    exampleFilename: ko.observable(),
     autoSegmRunning: ko.observable(false),
     autoSegm: ko.observable(null),
 
@@ -293,4 +307,6 @@ function App(options) {
     }
     return true;
   }, this);
+
+  this.haveDownloadAttribute = (typeof $('<a>')[0].download !== 'undefined');
 }
