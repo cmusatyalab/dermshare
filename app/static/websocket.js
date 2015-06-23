@@ -81,6 +81,7 @@ function ClientSocket(url, barcode, image) {
 
   var self = this;
   var expect;
+  var image_type;
 
   function init_socket() {
     expect = EXPECT_BARCODE;
@@ -103,6 +104,7 @@ function ClientSocket(url, barcode, image) {
           break;
         case 'image':
           expect = EXPECT_IMAGE;
+          image_type = msg.content_type;
           break;
         case 'pong':
           break;
@@ -114,12 +116,17 @@ function ClientSocket(url, barcode, image) {
 
       case EXPECT_BARCODE:
         expect = EXPECT_MSG;
-        barcode(ev.data);
+        barcode(new Blob([ev.data], {
+          // server always sends PNG
+          type: 'image/png',
+        }));
         break;
 
       case EXPECT_IMAGE:
         expect = EXPECT_MSG;
-        image(ev.data);
+        image(new Blob([ev.data], {
+          type: image_type,
+        }));
         self.send_msg('ack');
         break;
 
@@ -189,7 +196,9 @@ function MobileSocket(url, auth_token) {
 
     send_image: function(blob) {
       self.pending(self.pending() + 1);
-      self.send_msg('image');
+      self.send_msg('image', {
+        content_type: blob.type,
+      });
       self.sock.send(blob);
     },
   });

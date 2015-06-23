@@ -160,6 +160,7 @@ class ImageMobileConnection(_ImageRelayConnection):
     def __init__(self, *args, **kwargs):
         _ImageRelayConnection.__init__(self, *args, **kwargs)
         self.state = self.STATE_AUTHENTICATING
+        self.image_type = None
 
     def unpeer(self):
         self.peer = None
@@ -179,13 +180,14 @@ class ImageMobileConnection(_ImageRelayConnection):
             msg = json.loads(msg)
             if msg['type'] == 'image':
                 self.state = self.STATE_SENDING_IMAGE
+                self.image_type = msg['content_type']
             elif msg['type'] == 'ping':
                 self.send_msg('pong')
             else:
                 raise ValueError('Invalid message')
         elif self.state == self.STATE_SENDING_IMAGE:
             if self.peer:
-                self.peer.send_msg('image')
+                self.peer.send_msg('image', content_type=self.image_type)
                 self.peer.send_blob(msg)
             self.state = self.STATE_RUNNING
         else:
