@@ -88,6 +88,15 @@ function ClientSocket(url, barcode, image, imageSaved) {
     self.verifier(null);
   };
 
+  function send_saved() {
+    if (self.connected() && !self.closed()) {
+      self.send_msg('saved', {
+        value: imageSaved(),
+      });
+    }
+  }
+  imageSaved.subscribe(send_saved);
+
   _ImageSocket.apply(this, [{
     url: url,
 
@@ -98,6 +107,7 @@ function ClientSocket(url, barcode, image, imageSaved) {
         switch (msg.type) {
         case 'peer':
           self.verifier(msg.verifier);
+          send_saved();
           break;
         case 'unpeer':
           self.verifier(null);
@@ -182,6 +192,9 @@ function MobileSocket(url, auth_token) {
           self.pending(self.pending() - 1);
         }
         break;
+      case 'saved':
+        self.imageSaved(msg.value);
+        break;
       case 'pong':
         break;
       default:
@@ -194,6 +207,7 @@ function MobileSocket(url, auth_token) {
   $.extend(this, {
     verifier: ko.observable(),
     pending: ko.observable(0),
+    imageSaved: ko.observable(),
 
     send_image: function(blob) {
       self.pending(self.pending() + 1);

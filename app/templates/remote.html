@@ -57,8 +57,10 @@
 
         <div class="buttons"
             data-bind="if: sock.verifier() && !sock.closed()">
-          <button class="btn btn-large btn-primary"
-              data-bind="openFileWidget: image,
+          <button class="btn btn-large"
+              data-bind="css: {'btn-primary': sock.imageSaved(),
+                               'btn-warning': !sock.imageSaved()},
+                         openFileWidget: image,
                          openFileCapture: true">
             <i class="fa fa-camera"></i>
             Take photo

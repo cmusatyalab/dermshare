@@ -230,7 +230,7 @@ function App(options) {
     }, this),
     exampleFilename: ko.observable(),
     exampleObjectURL: ko.observable(),
-    exampleSaved: ko.observable(),
+    exampleSaved: ko.observable(true),
     autoSegmRunning: ko.observable(false),
     autoSegm: ko.observable(null),
 

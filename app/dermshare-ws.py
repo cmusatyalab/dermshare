@@ -140,6 +140,9 @@ class ImageClientConnection(_ImageRelayConnection):
         if msg['type'] == 'ack':
             if self.peer:
                 self.peer.send_msg('ack')
+        elif msg['type'] == 'saved':
+            if self.peer:
+                self.peer.send_msg('saved', value=msg['value'])
         elif msg['type'] == 'kick':
             if self.peer:
                 self.peer.close(1000, 'Connection terminated by client')
