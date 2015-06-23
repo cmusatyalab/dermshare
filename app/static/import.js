@@ -33,7 +33,7 @@ ko.bindingHandlers.disabledDropZone = {
 
 ko.bindingHandlers.exampleDropZone = {
   // example drag-and-drop
-  init: function(element, valueAccessor) {
+  init: function(element, valueAccessor, allBindings) {
     $(element).on({
       'dragenter': function(ev) {
         // we are a drop target; prevent drops from propagating
@@ -87,6 +87,7 @@ ko.bindingHandlers.exampleDropZone = {
           }
         }
         valueAccessor()(accepted_file);
+        allBindings.get('exampleDropZoneSaved')(true);
       },
     });
   },
@@ -103,6 +104,10 @@ ko.bindingHandlers.openFileWidget = {
     }
     input.on('change', function(ev) {
       valueAccessor()(this.files[0]);
+      var saved = allBindings.get('openFileSaved');
+      if (saved) {
+        saved(true);
+      }
       form[0].reset();
     });
     $(element).click(function(ev) {

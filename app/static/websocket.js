@@ -70,7 +70,7 @@ function _ImageSocket(args) {
 }
 
 
-function ClientSocket(url, barcode, image) {
+function ClientSocket(url, barcode, image, imageSaved) {
   if (!(this instanceof arguments.callee)) {
     throw "Constructor called without new";
   }
@@ -127,6 +127,7 @@ function ClientSocket(url, barcode, image) {
         image(new Blob([ev.data], {
           type: image_type,
         }));
+        imageSaved(false);
         self.send_msg('ack');
         break;
 

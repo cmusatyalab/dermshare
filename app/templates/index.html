@@ -384,10 +384,12 @@
             <div class="segmenter-controls btn-toolbar" role="toolbar">
               <div class="btn-group" role="group">
                 <a class="btn" id="save"
-                    data-bind="css: {disabled: !haveDownloadAttribute || !example()},
+                    data-bind="css: {disabled: !haveDownloadAttribute || !example(),
+                                     'btn-info': example() && !exampleSaved()},
                                attr: {href: exampleObjectURL,
                                       download: exampleFilename,
-                                      title: haveDownloadAttribute ? null : 'Not supported in this browser'}">
+                                      title: haveDownloadAttribute ? null : 'Not supported in this browser'},
+                               click: setExampleSaved">
                   <i class="fa fa-floppy-o"></i> Save Image
                 </a>
               </div>
@@ -427,9 +429,11 @@
             </div>
 
             <div class="well"
-                data-bind="exampleDropZone: example">
+                data-bind="exampleDropZone: example,
+                           exampleDropZoneSaved: exampleSaved">
               <button class="open-button btn btn-link pull-right"
-                  data-bind="openFileWidget: example">
+                  data-bind="openFileWidget: example,
+                             openFileSaved: exampleSaved">
                 <i class="fa fa-folder-open"></i>
               </button>
               <!-- ko ifnot: example() -->

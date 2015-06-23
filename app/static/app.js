@@ -230,6 +230,7 @@ function App(options) {
     }, this),
     exampleFilename: ko.observable(),
     exampleObjectURL: ko.observable(),
+    exampleSaved: ko.observable(),
     autoSegmRunning: ko.observable(false),
     autoSegm: ko.observable(null),
 
@@ -292,9 +293,19 @@ function App(options) {
     clearError: function() {
       self.error(null);
     },
+
+    setExampleSaved: function() {
+      // don't mark the example saved if the browser can't do it
+      if (self.haveDownloadAttribute) {
+        self.exampleSaved(true);
+      }
+      // don't prevent default
+      return true;
+    }
   });
 
-  this.sock = new ClientSocket(options.ws_url, this.barcode, this.example);
+  this.sock = new ClientSocket(options.ws_url, this.barcode, this.example,
+      this.exampleSaved);
 
   this.haveSegmentation = ko.computed(function() {
     return (this.example() && !this.autoSegmRunning() &&
