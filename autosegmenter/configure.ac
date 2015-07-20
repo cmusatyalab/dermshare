@@ -40,5 +40,6 @@ AC_ARG_VAR([OPENCV_CFLAGS], [OpenCV CFLAGS])
 AC_ARG_VAR([OPENCV_LIBS], [OpenCV LDFLAGS])
 
 AC_SEARCH_LIBS([sqrt], [m],, AC_MSG_FAILURE([cannot find math library]))
+AC_SEARCH_LIBS([pthread_getspecific], [pthread],, AC_MSG_FAILURE([cannot find threading library]))
 
 AC_OUTPUT([Makefile])
