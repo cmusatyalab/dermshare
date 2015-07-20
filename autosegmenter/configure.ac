@@ -27,7 +27,7 @@ if test "x$IPP_LIBS" = x ; then
 	IPP_LIBS="-lippcc_l -lippcv_l -lippi_l -lipps_l -lippcore_l"
 fi
 if test "x$OPENCV_CFLAGS" = x ; then
-	OPENCV_CFLAGS=-I/opt/diamond-filter-kit/include/opencv
+	OPENCV_CFLAGS=-I/opt/diamond-filter-kit/include
 fi
 if test "x$OPENCV_LIBS" = x ; then
 	OPENCV_LIBS="-lopencv_highgui -lopencv_core -ltiff -lz -lrt"

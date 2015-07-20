@@ -56,8 +56,8 @@
 #include "ipp.h"
 #include "ippcv.h"
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 #include "diamond/rgb.h"
 
