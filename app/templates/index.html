@@ -129,6 +129,9 @@
     #remote-info-content {
       text-align: center;
     }
+    #remote-info .barcode {
+      cursor: none;
+    }
     #remote-info .kick {
       margin-left: 0.5em;
     }
@@ -541,7 +544,8 @@
               <div id="remote-info-content">
                 <div data-bind="if: barcode() && !sock.verifier()">
                   <p>Scan to connect:</p>
-                  <img data-bind="attr: {src: barcode}">
+                  <img class="barcode"
+                      data-bind="attr: {src: barcode}">
                 </div>
                 <div data-bind="if: sock.verifier">
                   <p>
