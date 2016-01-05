@@ -1,7 +1,7 @@
 #
 # DermShare Autosegmenter
 #
-# Copyright (c) 2015 Carnegie Mellon University
+# Copyright (c) 2015,2016 Carnegie Mellon University
 # All rights reserved.
 #
 # This software is distributed under the terms of the Eclipse Public
@@ -13,9 +13,9 @@ import numpy as np
 
 from skimage.color import rgb2lab, lab2rgb
 from skimage.filters import median
-from skimage.morphology import closing, dilation, disk
+from skimage.morphology import closing, dilation, disk, square
 from skimage.transform import rescale
-from skimage.util import img_as_ubyte, pad
+from skimage.util import img_as_ubyte
 
 #
 # Aspect preserving resize that also returns the scale factor
@@ -41,24 +41,25 @@ def labnorm2rgb(labnorm_image):
     lab_image = (labnorm_image[...,:3] * CIELAB_SCALE) - CIELAB_OFFSET
     return lab2rgb(lab_image)
 
-#
-# Helpers to apply morphological operations on an image with a padded border
-#
-def _MorphWithBorder(op, img, mask):
-    N = mask.shape[0]/2
-    padded = pad(img, N, 'edge')
-    result = op(padded, mask)
-    return result[N:-N,N:-N]
+# morphological closing operator
+def morph_close(image, selem=None):
+    if selem is None:
+        # default mask is 11x11 square with rounded corners
+        selem = disk(6)[1:-1,1:-1]
+    return closing(image, selem)
 
-def morph_close(image, mask=disk(6)[1:-1,1:-1]):
-    # default mask is 11x11 square with rounded corners
-    return _MorphWithBorder(closing, image, mask)
+def morph_dilate(image, selem=None):
+    if selem is None:
+        # default mask is 3x3 disk/cross
+        selem = disk(1)
+    return dilation(image, selem)
 
-def morph_dilate(image, mask=disk(1)):
-    return _MorphWithBorder(dilation, image, mask)
-
-def median_filter(image, selem):
+# median filter, we filter each RGB or LAB channel separately and merge back
+def median_filter(image, selem=None):
+    if selem is None:
+        # default mask is 5x5 square
+        selem = square(5)
     depth = image.shape[2]
-    return np.dstack(_MorphWithBorder(median, channel[...,0], selem)
+    return np.dstack(median(channel[...,0], selem)
                      for channel in np.dsplit(image, depth)) / 255.
 

@@ -1,7 +1,7 @@
 #
 # DermShare Autosegmenter
 #
-# Copyright (c) 2015 Carnegie Mellon University
+# Copyright (c) 2015,2016 Carnegie Mellon University
 # All rights reserved.
 #
 # This software is distributed under the terms of the Eclipse Public
@@ -75,7 +75,7 @@ def clean_mask(image):
     mask = remove_small_regions(mask, SMALL_REGION_THRESHOLD)
     mask = morph_close(mask)
     image = mask[...,np.newaxis] * 1.
-    mask = median_filter(image, square(5)) == 0
+    mask = median_filter(image) == 0
     mask = remove_small_regions(mask, SMALL_REGION_THRESHOLD * 2) == 0
     return mask * 1.
 
@@ -100,8 +100,8 @@ def Segmenter(image, debug=None):
     superclusters[...,3] /= RADIUS_IMPORTANCE_FACTOR
     segmented_image = superclusters[clustered]
 
-    # smooth edges using filterMedian 5x5
-    filtered_segmentation = median_filter(segmented_image, square(5))
+    # smooth edges using median filter with 5x5 mask
+    filtered_segmentation = median_filter(segmented_image)
 
     # classify foreground vs background
     # - identify the (likely) camera aperture
