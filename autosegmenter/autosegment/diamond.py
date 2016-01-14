@@ -9,6 +9,8 @@
 # ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
 # RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 
+from __future__ import with_statement, print_function
+
 import numpy as np
 
 from opendiamond.filter import Filter
@@ -33,11 +35,12 @@ def processOneImage(image, debug=None):
         if debug:
             debug['scaled_original'] = image
 
-        print "=================\nRemoving hair ..."
+        print("Removing hair ...")
         hair_removed = HairRemover(image, debug)
 
-        print "=================\nSegmenting ..."
+        print("Segmenting ...")
         segmentation = Segmenter(hair_removed, debug)
+
         return rescale(segmentation, 1./scale, order=3)
 
     return None
