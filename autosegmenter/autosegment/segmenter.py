@@ -20,29 +20,29 @@ from skimage.morphology import square
 from .image import rgb2labnorm, labnorm2rgb, morph_close, median_filter
 from .opencv import EarthMoversDistance
 
+COORDINATE_TO_COLOR_RATIO = 20
 RADIUS_IMPORTANCE_FACTOR = 2
 EXCEPTION_FACTOR = 0.75
 SMALL_REGION_THRESHOLD = 900
-NUM_SUPER_CLUSTERS = 6
+NUM_SUPER_CLUSTERS = 7
 
 def _clusterKMeans(image, K, numIterations, debug=None):
     width, height = image.shape[:2]
     
-    if True:
-        ## add an extra channel containing distance from center to make
-        ## clusters favor circular features around the center of the image
+    ## add an extra channel containing distance from center to make
+    ## clusters favor circular features around the center of the image
 
-        # if we have a 2 pixel wide image, the center should be between pixels 0 and 1
-        center_x, center_y = (width-1)/2., (height-1)/2.
+    # if we have a 2 pixel wide image, the center should be between pixels 0 and 1
+    center_x, center_y = (width-1)/2., (height-1)/2.
 
-        # compute distance from center
-        dx = np.fromfunction(lambda x,y: x - center_x, (width,1))
-        dy = np.fromfunction(lambda x,y: y - center_y, (1,height))
-        dist_from_center = np.sqrt(np.add(np.square(dx), np.square(dy)))
-        dist_from_center /= dist_from_center[0,0]
+    # compute distance from center
+    dx = np.fromfunction(lambda x,y: x - center_x, (width,1))
+    dy = np.fromfunction(lambda x,y: y - center_y, (1,height))
+    dist_from_center = np.sqrt(np.add(np.square(dx), np.square(dy)))
+    dist_from_center /= dist_from_center[0,0] * COORDINATE_TO_COLOR_RATIO
 
-        # add as a new channel to image
-        image = np.dstack([image, dist_from_center])
+    # add as a new channel to image
+    image = np.dstack([image, dist_from_center])
 
     # sample 10000 pixels and use K-means to determine the clusters
     channels = image.shape[2]
@@ -147,7 +147,8 @@ def Segmenter(image, debug=None):
             continue
 
         # is this cluster similar enough to what we believe to be skin
-        if EarthMoversDistance(skin_signature, signature) < 30:
+        emd = EarthMoversDistance(skin_signature, signature)
+        if emd < 60:
            continue 
 
         # anything else must be lesion
