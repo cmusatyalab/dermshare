@@ -56,13 +56,13 @@ def _clusterKMeans(image, K, numIterations, debug=None):
 
     clustered = quantized.reshape(width, height)
 
-    if debug:
+    if debug is not None:
         debug["clustered"] = labnorm2rgb(centroids[clustered])
     
     return centroids, clustered
 
 def remove_small_regions(mask, threshold):
-    labelled = label(mask, connectivity=2)
+    labelled = label(mask, neighbors=8)
     small_regions = ( labelled == prop.label
                        for prop in regionprops(labelled)
                        if prop.area < threshold )
@@ -74,8 +74,9 @@ def clean_mask(image):
     mask = image != 0
     mask = remove_small_regions(mask, SMALL_REGION_THRESHOLD)
     mask = morph_close(mask)
-    image = mask[...,np.newaxis] * 1.
-    mask = median_filter(image) == 0
+    image = mask[...,np.newaxis] * 255
+    image = median_filter(image)
+    mask = np.reshape(image == 0, mask.shape)
     mask = remove_small_regions(mask, SMALL_REGION_THRESHOLD * 2) == 0
     return mask * 1.
 
@@ -153,10 +154,10 @@ def Segmenter(image, debug=None):
 
         # anything else must be lesion
         lesion_mask |= mask
-        
+
     lesion_mask = clean_mask(lesion_mask) * 1.
 
-    if debug:
+    if debug is not None:
         debug["segmented"] = labnorm2rgb(segmented_image)
         debug["segmFiltered"] = labnorm2rgb(filtered_segmentation)
         debug["segmFilled"] = lesion_mask

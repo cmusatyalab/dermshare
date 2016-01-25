@@ -12,7 +12,7 @@
 import numpy as np
 
 from skimage.color import rgb2lab, lab2rgb
-from skimage.filters import median
+from skimage.filter.rank import median
 from skimage.morphology import closing, dilation, disk, square
 from skimage.transform import rescale
 from skimage.util import img_as_ubyte

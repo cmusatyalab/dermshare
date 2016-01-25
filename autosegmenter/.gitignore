@@ -15,3 +15,5 @@ stamp-h1
 *.o
 
 src/autosegmenter
+fil_autosegment
+autosegment.pred

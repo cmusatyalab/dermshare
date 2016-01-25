@@ -297,7 +297,7 @@ def _get_segm_filters():
         },
         {
             'name': 'autosegmenter',
-            'code': _search_blob_spec('autosegmenter'),
+            'code': _search_blob_spec('fil_autosegment'),
             'dependencies': ['RGB'],
             'min_score': 1,
         },

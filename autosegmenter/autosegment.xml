@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<predicate xmlns="http://diamond.cs.cmu.edu/xmlns/opendiamond/bundle-1" displayName="Autosegment">
+  <filters>
+    <filter code="fil_autosegment" label="AutoSegmentationFilter">
+      <minScore value="1"/>
+      <arguments>
+        <argument value="AutoSegmentationFilter"/>
+      </arguments>
+    </filter>
+  </filters>
+</predicate>

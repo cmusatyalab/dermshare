@@ -18,31 +18,35 @@ from skimage.io import imread, imsave
 
 from .diamond import AutoSegmentationFilter, processOneImage
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-d', '--debug', action="store_true")
-parser.add_argument('image')
 
-
-def interactive_eval(image_path):
-    image = imread(image_path)
-    debug = {}
-
-    processOneImage(image, debug)
-
-    # dump intermediate results for debug
-    base_path = os.path.splitext(image_path)[0]
-    for key, value in debug.items():
-        if isinstance(value, np.ndarray):
-            imsave("{}_{}.png".format(base_path, key), value)
-
-if __name__ == '__main__':
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', action="store_true")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--filter', action="store_true",
+                       help="run as Diamond filter")
+    group.add_argument('image', nargs='?',
+                       help="image to segment")
     args = parser.parse_args()
 
     if not args.debug:
         warnings.simplefilter("ignore")
 
-    if args.image == '--filter':
+    if args.filter:
         AutoSegmentationFilter.run()
-    else:
-        interactive_eval(args.image)
 
+    # Not running as a diamond filter
+    # process image and write out intermediate results as png
+    image = imread(args.image)
+    debug = {}
+
+    processOneImage(image, debug)
+
+    base_path = os.path.splitext(args.image)[0]
+    for key, value in debug.items():
+        if isinstance(value, np.ndarray):
+            imsave("%s_%s.png" % (base_path, key), value)
+
+
+if __name__ == '__main__':
+    main()

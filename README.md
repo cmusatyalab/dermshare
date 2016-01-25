@@ -5,7 +5,6 @@
 ### At build time
 
 - [OpenDiamond](http://diamond.cs.cmu.edu/)
-- Intel IPP (tested with 2011.13.367)
 
 ### On the web application server
 
@@ -19,11 +18,13 @@
 - OpenCV-Python
 - BLAS library and headers
 - LAPACK library and headers
+- freetype library and headers
+- libpng library and headers
+- libjpeg library and headers
 
 ## DermShare
 
-1. Build the [autosegmenter](autosegmenter).  Be sure to set up your
-   environment for IPP using `compilervars.sh`.
+1. Use [make-filter.py](autosegmenter/make-filter.py) to build the Autosegment filter.
 2. Use [make-filter.py](gemini/make-filter.py) to build the Gemini filter.
 3. Create and populate virtualenv.  Use `--system-site-packages`, since
    OpenDiamond can't be installed with pip.
@@ -37,12 +38,14 @@ To avoid conflicts with older versions of NumPy and Six packaged by your
 Linux distribution, it is best to (re-)install NumPy v1.9.1 and Six v1.9.0
 with pip after installing OpenCV-Python.
 
-`fil_gemini` must install dependencies into a virtualenv in /tmp the first
-time it runs.  To avoid long delays in the first search, the virtualenv can
-be prepopulated by running `fil_gemini` without arguments on the Diamond
-servers.  To avoid additional delays whenever a Diamond server is rebooted
-or /tmp is cleared, you can globally install the necessary Python libraries:
+`fil_autosegment` and `fil_gemini` must install dependencies into a virtualenv
+in /tmp the first time it runs.  To avoid long delays in the first search, the
+virtualenv can be prepopulated by running `fil_autosegment` and `fil_gemini`
+without arguments on the Diamond servers.  To avoid additional delays whenever
+a Diamond server is rebooted or /tmp is cleared, you can globally install the
+necessary Python libraries:
 
+    pip install -r autosegment/requirements.txt
     pip install -r gemini/requirements.txt
 
 ## Scope server

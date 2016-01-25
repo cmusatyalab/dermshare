@@ -9,9 +9,8 @@
 # ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS SOFTWARE CONSTITUTES
 # RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT
 
-from skimage.color import rgb2luv
-
-from .image import morph_close, morph_dilate
+from skimage.util import img_as_ubyte
+from .image import rgb2labnorm, morph_close, morph_dilate
 from .opencv import Inpainter
 
 def HairRemover(image, debug=None):
@@ -19,9 +18,9 @@ def HairRemover(image, debug=None):
     # extract hair as morphologically thin structures
     # -----------------------------------------------------------------
 
-    # convert to Luv color space
-    Luv_image = rgb2luv(image)
-    L = Luv_image[..., 0]
+    # convert to Lab color space
+    Lab_image = rgb2labnorm(image)
+    L = img_as_ubyte(Lab_image[..., 0])
 
     # a hard threshold is then applied to the difference between
     # the luminance before and after morphological closing

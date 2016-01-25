@@ -28,13 +28,19 @@ except ImportError:
         cv.SetData(mat, array, cv.CV_AUTOSTEP)
         return mat
 
-    def inpaint(src, mask, radius, flags):
-        dst = cv.CreateMat(src.shape[0], src.shape[1], cv.CV_8UC3)
-        cv.Inpaint(src, mask, dst, radius, flags)
+    def inpaint(src_np, msk_np, radius, flags):
+        src_cv = cv.CreateMat(src_np.shape[0], src_np.shape[1], cv.CV_8UC3)
+        msk_cv = cv.CreateMat(msk_np.shape[0], msk_np.shape[1], cv.CV_8UC1)
+        dst_cv = cv.CreateMat(src_np.shape[0], src_np.shape[1], cv.CV_8UC3)
+        cv.SetData(src_cv, src_np, cv.CV_AUTOSTEP)
+        cv.SetData(msk_cv, msk_np, cv.CV_AUTOSTEP)
+        cv.Inpaint(src_cv, msk_cv, dst_cv, radius, flags)
+        dst = [ [ dst_cv[i,j] for j in xrange(src_np.shape[1]) ]
+                              for i in xrange(src_np.shape[0]) ]
         return np.asarray(dst)[...,::-1] # BGR -> RGB
 
-    INPAINT_NS = cv.INPAINT_NS
-    INPAINT_TELEA = cv.INPAINT_TELEA
+    INPAINT_NS = cv.CV_INPAINT_NS
+    INPAINT_TELEA = cv.CV_INPAINT_TELEA
 
 #
 # Earth Mover's Distance

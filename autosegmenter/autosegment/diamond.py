@@ -32,13 +32,13 @@ def processOneImage(image, debug=None):
         make_boring()
 
         image, scale = resize(image, DEFAULT_IMAGE_SIZE)
-        if debug:
+        if debug is not None:
             debug['scaled_original'] = image
 
-        print("Removing hair ...")
+        if debug is not None: print("Removing hair ...")
         hair_removed = HairRemover(image, debug)
 
-        print("Segmenting ...")
+        if debug is not None: print("Segmenting ...")
         segmentation = Segmenter(hair_removed, debug)
 
         return rescale(segmentation, 1./scale, order=3)
@@ -47,9 +47,8 @@ def processOneImage(image, debug=None):
 
 class AutoSegmentationFilter(Filter):
     def __call__(self, obj):
-        results = processOneImage(obj.image)
-
-        segmentation = results['segmentation']
+        image = np.asarray(obj.image)
+        segmentation = processOneImage(image)
         segmentation = Image.fromarray(np.uint8(segmentation * 255.))
         obj.set_heatmap(HEATMAP_NAME % self.session.name, segmentation)
         return True
