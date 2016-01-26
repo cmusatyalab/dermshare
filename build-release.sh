@@ -17,11 +17,6 @@ cd "${releasedir}"
 rm -f build-release.sh
 find . -name .gitignore -delete
 
-# Autoconfiscate
-cd autosegmenter
-autoreconf -i
-cd ..
-
 # Archive
 cd ..
 tar cf "${releasedir}.tar" --owner 0 --group 0 "${releasedir}"
