@@ -2,7 +2,7 @@
 #
 # Gemini -- Diamond filter loader
 #
-# Copyright (c) 2012, 2015 Carnegie Mellon University
+# Copyright (c) 2012, 2015, 2016 Carnegie Mellon University
 # All rights reserved.
 #
 # This software is distributed under the terms of the Eclipse Public
@@ -21,7 +21,6 @@ import errno
 import fcntl
 import hashlib
 import os
-import shutil
 import subprocess
 import tempfile
 import virtualenv
@@ -60,10 +59,14 @@ def setup_virtualenv(archive, tmp=None):
 
                 REQUIREMENTS = os.path.join(envdir, 'requirements.txt')
                 VENV_PIP = os.path.join(envdir, 'bin', 'pip')
-                PIPCACHE = os.path.join(os.environ['HOME'], 'pip-cache')
+                WHEELHOUSE = 'file://' + os.path.join(os.environ['HOME'], 'wheelhouse')
                 subprocess.check_call([
                     VENV_PIP, 'install',
-                    '--download-cache', PIPCACHE,
+                    '--upgrade', 'pip', 'wheel',
+                ], stdout=sys.stderr, stderr=subprocess.STDOUT)
+                subprocess.check_call([
+                    VENV_PIP, 'install',
+                    '--find-links', WHEELHOUSE,
                     '--requirement', REQUIREMENTS,
                 ], stdout=sys.stderr, stderr=subprocess.STDOUT)
 

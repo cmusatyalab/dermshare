@@ -59,10 +59,14 @@ def setup_virtualenv(archive, tmp=None):
 
                 REQUIREMENTS = os.path.join(envdir, 'requirements.txt')
                 VENV_PIP = os.path.join(envdir, 'bin', 'pip')
-                PIPCACHE = os.path.join(os.environ['HOME'], 'pip-cache')
+                WHEELHOUSE = 'file://' + os.path.join(os.environ['HOME'], 'wheelhouse')
                 subprocess.check_call([
                     VENV_PIP, 'install',
-                    '--download-cache', PIPCACHE,
+                    '--upgrade', 'pip', 'wheel',
+                ], stdout=sys.stderr, stderr=subprocess.STDOUT)
+                subprocess.check_call([
+                    VENV_PIP, 'install',
+                    '--find-links', WHEELHOUSE,
                     '--requirement', REQUIREMENTS,
                 ], stdout=sys.stderr, stderr=subprocess.STDOUT)
 
