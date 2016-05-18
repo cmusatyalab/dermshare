@@ -11,7 +11,6 @@
 # Autosegmentation
 
 - Detect and ignore pixels outside image area on affected slides
-- Replace Intel IPP with an open-source library
 - Detect ruler markings and inpaint
 - Don't assume that the lesion is at the center of the image
 - Examine alternative algorithms (e.g. GrowCut)
