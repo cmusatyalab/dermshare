@@ -1,5 +1,5 @@
-flask==0.10.1
-werkzeug==0.10.4
+Flask==0.12.3
+Werkzeug==0.10.4
 gevent-websocket==0.9.5
 requests==2.20.0
 qrcode==5.1
